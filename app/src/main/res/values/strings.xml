@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">BeaconsCampus</string>
+
+    <string name="title_activity_attendance">Attendance</string>
+
+    <string name="title_activity_information">Information</string>
+
+    <string name="prompt_quit">Press back again to leave</string>
 </resources>
