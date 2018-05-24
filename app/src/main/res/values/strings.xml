@@ -6,4 +6,10 @@
     <string name="title_activity_information">Information</string>
 
     <string name="prompt_quit">Press back again to leave</string>
+
+    <string name="name">Name: </string>
+
+    <string name="student_id">Student ID: </string>
+
+    <string name="status">Status: You are not attending any class</string>
 </resources>

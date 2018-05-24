@@ -15,7 +15,7 @@ import org.altbeacon.beacon.startup.RegionBootstrap;
  */
 
 public class BeaconsCampus extends Application implements BootstrapNotifier {
-    private static final String TAG = ".MyApplicationName";
+    private static final String TAG = "BeaconsCampus";
     private RegionBootstrap regionBootstrap;
 
     @Override
