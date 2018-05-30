@@ -5,10 +5,6 @@ buildscript {
     repositories {
         google()
         jcenter()
-
-        flatDir{
-            dirs 'C:\\Users\\ahmad\\Documents\\BeaconsCampus\\meridian-4.3.0.aar'
-        }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.0.1'

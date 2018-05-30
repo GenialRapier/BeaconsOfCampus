@@ -1,17 +1,36 @@
 package com.gr.beaconscampus;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.Build;
+import android.os.RemoteException;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity {
+import org.altbeacon.beacon.Beacon;
+import org.altbeacon.beacon.BeaconConsumer;
+import org.altbeacon.beacon.BeaconManager;
+import org.altbeacon.beacon.RangeNotifier;
+import org.altbeacon.beacon.Region;
+
+import java.util.Collection;
+
+public class MainActivity extends AppCompatActivity implements BeaconConsumer {
 
     private TabLayout tabLayout;
     private BeaconPagerAdapter pagerAdapter;
     private long mBackPressed;
+    private Context context;
+    private ViewPager viewPager;
+    private String LOG = "MainActivity";
+
+    private BeaconManager beaconManager;
 
     private int[] tabIcons = {
             R.drawable.ic_assignment_turned_in_black_24dp,
@@ -25,11 +44,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Context context = getApplicationContext();
+        context = getApplicationContext();
         setContentView(R.layout.activity_main);
 
+        beaconManager = BeaconManager.getInstanceForApplication(this);
+        beaconManager.bind(this);
+
         // Find the view pager that will allow the user to swipe between fragments
-        ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
+        viewPager = (ViewPager) findViewById(R.id.viewpager);
 
         // Create an adapter that knows which fragment should be shown on each page
         pagerAdapter = new BeaconPagerAdapter(getSupportFragmentManager(), this);
@@ -40,17 +62,22 @@ public class MainActivity extends AppCompatActivity {
         tabLayout.setupWithViewPager(viewPager);
 
         setupTabIcons();
+
+//        Intent myIntent = new Intent(this, RangingActivity.class);
+//        myIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//        this.startActivity(myIntent);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        beaconManager.unbind(this);
     }
 
-//    @Override
-//    protected void onResume() {
-//        super.onResume();
-//    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
 
     @Override
     public void onBackPressed() {
@@ -65,5 +92,31 @@ public class MainActivity extends AppCompatActivity {
     private void setupTabIcons() {
         tabLayout.getTabAt(0).setIcon(tabIcons[0]);
         tabLayout.getTabAt(1).setIcon(tabIcons[1]);
+    }
+
+    @Override
+    public void onBeaconServiceConnect() {
+        beaconManager.addRangeNotifier(new RangeNotifier() {
+            @Override
+            public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
+                for (Beacon beacon: beacons) {
+                    Log.i("Main", "I see a beacon with identifiers: "+beacon.getId1()+" "+beacon.getId2()+" "+beacon.getId3());
+                    if (beacon.getId1().toString().equals("e2c56db5-dffb-48d2-b060-d0f5a71096e0")) {
+                        Log.d("Main", "gotem");
+                        if(viewPager.getCurrentItem() == 0) //First fragment
+                        {
+//                            AttendanceActivityFragment frag1 = (AttendanceActivityFragment)getSupportFragmentManager().findFragmentById(R.id.fragment_attendance);
+                            AttendanceActivityFragment frag1 = (AttendanceActivityFragment) viewPager.getAdapter().instantiateItem(viewPager, viewPager.getCurrentItem());
+                            frag1.dialog();
+                            break;
+                        }
+                    }
+                }
+            }
+        });
+
+        try {
+            beaconManager.startRangingBeaconsInRegion(new Region("myRangingUniqueId", null, null, null));
+        } catch (RemoteException e) {    }
     }
 }

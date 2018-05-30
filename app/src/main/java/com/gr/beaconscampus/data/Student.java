@@ -10,9 +10,10 @@ public class Student {
     private String status;
 
 
-    public Student(String id, String name) {
+    public Student(String id, String name, String status) {
         this.student_id = id;
         this.student_name = name;
+        this.status = status;
     }
 
     public String getStudent_id() {
@@ -21,5 +22,9 @@ public class Student {
 
     public String getStudent_name() {
         return student_name;
+    }
+
+    public String getStatus() {
+        return status;
     }
 }
