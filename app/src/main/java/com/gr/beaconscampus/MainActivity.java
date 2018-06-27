@@ -1,23 +1,26 @@
 package com.gr.beaconscampus;
 
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.os.Build;
 import android.os.RemoteException;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
+import android.Manifest;
+
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 
 import org.altbeacon.beacon.Beacon;
 import org.altbeacon.beacon.BeaconConsumer;
 import org.altbeacon.beacon.BeaconManager;
 import org.altbeacon.beacon.RangeNotifier;
 import org.altbeacon.beacon.Region;
+import org.json.JSONObject;
 
 import java.util.Collection;
 
@@ -28,9 +31,11 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
     private long mBackPressed;
     private Context context;
     private ViewPager viewPager;
-    private String LOG = "MainActivity";
+    private String TAG = "MainActivity";
 
     private BeaconManager beaconManager;
+
+    public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
 
     private int[] tabIcons = {
             R.drawable.ic_assignment_turned_in_black_24dp,
@@ -62,10 +67,6 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         tabLayout.setupWithViewPager(viewPager);
 
         setupTabIcons();
-
-//        Intent myIntent = new Intent(this, RangingActivity.class);
-//        myIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//        this.startActivity(myIntent);
     }
 
     @Override
@@ -96,19 +97,18 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
 
     @Override
     public void onBeaconServiceConnect() {
+        Log.d(TAG, "onBeaconServiceConnect: ");
         beaconManager.addRangeNotifier(new RangeNotifier() {
             @Override
             public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
+                Log.d(TAG, "didRangeBeaconsInRegion: ");
                 for (Beacon beacon: beacons) {
-                    Log.i("Main", "I see a beacon with identifiers: "+beacon.getId1()+" "+beacon.getId2()+" "+beacon.getId3());
+                    Log.d(TAG, "I see a beacon with identifiers: "+beacon.getId1()+" "+beacon.getId2()+" "+beacon.getId3());
                     if (beacon.getId1().toString().equals("e2c56db5-dffb-48d2-b060-d0f5a71096e0")) {
-                        Log.d("Main", "gotem");
+                        Log.d(TAG, "gotem");
                         if(viewPager.getCurrentItem() == 0) //First fragment
                         {
-//                            AttendanceActivityFragment frag1 = (AttendanceActivityFragment)getSupportFragmentManager().findFragmentById(R.id.fragment_attendance);
-                            AttendanceActivityFragment frag1 = (AttendanceActivityFragment) viewPager.getAdapter().instantiateItem(viewPager, viewPager.getCurrentItem());
-                            frag1.dialog();
-                            break;
+                            request();
                         }
                     }
                 }
@@ -119,4 +119,26 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
             beaconManager.startRangingBeaconsInRegion(new Region("myRangingUniqueId", null, null, null));
         } catch (RemoteException e) {    }
     }
+
+    public void request() {
+        Log.d(TAG, "request: ");
+        String url = "http://my-json-feed";
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.d(TAG,"Response: " + response.toString());
+                    }
+                }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // TODO: Handle error
+                        Log.d(TAG, "nothing");
+                    }
+                });
+    }
+    
 }
