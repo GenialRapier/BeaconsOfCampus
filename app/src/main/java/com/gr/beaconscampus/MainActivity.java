@@ -11,16 +11,28 @@ import android.widget.Toast;
 import android.Manifest;
 
 import com.android.volley.Request;
+import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 
 import org.altbeacon.beacon.Beacon;
 import org.altbeacon.beacon.BeaconConsumer;
 import org.altbeacon.beacon.BeaconManager;
 import org.altbeacon.beacon.RangeNotifier;
 import org.altbeacon.beacon.Region;
+import org.json.JSONException;
 import org.json.JSONObject;
+
+
+
+import android.os.StrictMode;
+import android.util.Log;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 import java.util.Collection;
 
@@ -32,6 +44,10 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
     private Context context;
     private ViewPager viewPager;
     private String TAG = "MainActivity";
+
+    private String classString;
+    private String startTime;
+    private String endTime;
 
     private BeaconManager beaconManager;
 
@@ -45,6 +61,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
     private BeaconPagerAdapter getPagerAdapter() {
         return pagerAdapter;
     }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +78,9 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         // Create an adapter that knows which fragment should be shown on each page
         pagerAdapter = new BeaconPagerAdapter(getSupportFragmentManager(), this);
 
+
         viewPager.setAdapter(pagerAdapter);
+
 
         tabLayout = (TabLayout) findViewById(R.id.sliding_tabs);
         tabLayout.setupWithViewPager(viewPager);
@@ -109,6 +128,10 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
                         if(viewPager.getCurrentItem() == 0) //First fragment
                         {
                             request();
+//                            AttendanceActivityFragment frg = (AttendanceActivityFragment) pagerAdapter.getItem(0);
+//                            frg.request(context);
+                            Log.d(TAG, "didRangeBeaconsInRegion: qweouqwoieqwoewquo");
+
                         }
                     }
                 }
@@ -118,18 +141,39 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         try {
             beaconManager.startRangingBeaconsInRegion(new Region("myRangingUniqueId", null, null, null));
         } catch (RemoteException e) {    }
+
     }
 
     public void request() {
         Log.d(TAG, "request: ");
-        String url = "http://my-json-feed";
+        String url = "http://192.168.30.106:3000/api/currClass/1/test";
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
                 (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
 
                     @Override
                     public void onResponse(JSONObject response) {
+
                         Log.d(TAG,"Response: " + response.toString());
+                        try {
+                            classString = response.getString("name");
+                        } catch(JSONException e) {}
+                        try {
+                            startTime = response.getString("start_time");
+                        } catch (JSONException e) {}
+                        try {
+                            endTime = response.getString("end_time");
+                        } catch (JSONException e) {}
+                        AttendanceActivityFragment frg = (AttendanceActivityFragment) pagerAdapter.getItem(0);
+                            if(frg.classNameTextView == null) {
+                                Log.d(TAG, "onResponse: null");
+                            } else {
+                                Log.d(TAG, "onResponse: not null");
+                            }
+                            frg.classNameTextView.setText(getResources().getString(R.string.class_name) + " " + classString);
+                            frg.startTimeTextView.setText(getResources().getString(R.string.start_time) + " " + startTime);
+                            frg.endTimeTextView.setText(getResources().getString(R.string.end_time) + " " + endTime);
+
                     }
                 }, new Response.ErrorListener() {
 
@@ -139,6 +183,8 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
                         Log.d(TAG, "nothing");
                     }
                 });
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(jsonObjectRequest);
     }
     
 }

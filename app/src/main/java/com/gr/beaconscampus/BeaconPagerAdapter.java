@@ -16,6 +16,8 @@ public class BeaconPagerAdapter extends FragmentPagerAdapter{
     public BeaconPagerAdapter(FragmentManager fm, Context context) {
         super(fm);
         this.mContext = context;
+        fragments[0] = new AttendanceActivityFragment();
+        fragments[1] = new InformationActivityFragment();
     }
 
     private Fragment[] fragments = new Fragment[PAGE_COUNT];
@@ -24,13 +26,13 @@ public class BeaconPagerAdapter extends FragmentPagerAdapter{
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                fragments[position] = new AttendanceActivityFragment();
+//                fragments[position] = new AttendanceActivityFragment();
                 return fragments[position];
             case 1:
-                fragments[position] = new InformationActivityFragment();
+//                fragments[position] = new InformationActivityFragment();
                 return fragments[position];
             default:
-                fragments[0] = new AttendanceActivityFragment();
+//                fragments[0] = new AttendanceActivityFragment();
                 return fragments[0];
         }
     }

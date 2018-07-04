@@ -1,5 +1,6 @@
 package com.gr.beaconscampus;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -23,7 +24,16 @@ import android.widget.TextView;
 
 import android.Manifest;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.gr.beaconscampus.data.Student;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Created by ahmad on 02/05/2018.
@@ -33,7 +43,16 @@ public class AttendanceActivityFragment extends Fragment implements LocationList
 
     private TextView studentIdTextView;
     private TextView studentNameTextView;
+    public TextView classNameTextView;
+    public TextView startTimeTextView;
+    public TextView endTimeTextView;
     private TextView statusTextView;
+
+    private Context context;
+
+    private String classString;
+    private String startTime;
+    private String endTime;
 
     LocationManager locationManager;
     String provider;
@@ -44,6 +63,17 @@ public class AttendanceActivityFragment extends Fragment implements LocationList
 
     public AttendanceActivityFragment() {
 
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if(context == null) {
+            Log.d(TAG, "onAttach: null");
+        } else {
+            this.context = context;
+            Log.d(TAG, "onAttach: not null");
+        }
     }
 
     @Override
@@ -59,6 +89,14 @@ public class AttendanceActivityFragment extends Fragment implements LocationList
 
         this.statusTextView = (TextView) rootView.findViewById(R.id.statusTextView);
 
+        this.classNameTextView = (TextView) rootView.findViewById(R.id.classTextView);
+
+        this.startTimeTextView = (TextView) rootView.findViewById(R.id.startTextView);
+
+        this.endTimeTextView = (TextView) rootView.findViewById(R.id.endTextView);
+
+        Log.d(TAG, "onCreateView: called");
+
         studentNameTextView.setText(getResources().getString(R.string.name) + " " + student.getStudent_name());
 
         studentIdTextView.setText(getResources().getString(R.string.student_id) + " " + student.getStudent_id());
@@ -73,6 +111,8 @@ public class AttendanceActivityFragment extends Fragment implements LocationList
 
         checkLocationPermission();
 
+        //dialog();
+
         return rootView;
     }
 
@@ -84,6 +124,7 @@ public class AttendanceActivityFragment extends Fragment implements LocationList
     @Override
     public void onStart() {
         super.onStart();
+        //dialog();
     }
 
     @Override
@@ -238,4 +279,42 @@ public class AttendanceActivityFragment extends Fragment implements LocationList
     public void onProviderDisabled(String s) {
 
     }
+
+    public void request(Context contexte) {
+        Log.d(TAG, "request: ");
+        String url = "http://192.168.30.106:3000/api/currClass/1/test";
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+
+                        Log.d(TAG,"Response: " + response.toString());
+                        try {
+                            classString = response.getString("name");
+                        } catch(JSONException e) {}
+                        try {
+                            startTime = response.getString("start_time");
+                        } catch (JSONException e) {}
+                        try {
+                            endTime = response.getString("end_time");
+                        } catch (JSONException e) {}
+                              classNameTextView.setText(getResources().getString(R.string.class_name) + " " + classString);
+                              startTimeTextView.setText(getResources().getString(R.string.start_time) + " " + startTime);
+                              endTimeTextView.setText(getResources().getString(R.string.end_time) + " " + endTime);
+
+                    }
+                }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // TODO: Handle error
+                        Log.d(TAG, "nothing");
+                    }
+                });
+        RequestQueue requestQueue = Volley.newRequestQueue(contexte);
+        requestQueue.add(jsonObjectRequest);
+    }
+
 }
