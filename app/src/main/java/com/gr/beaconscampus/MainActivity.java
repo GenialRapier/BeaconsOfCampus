@@ -8,7 +8,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
-import android.Manifest;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -24,15 +23,6 @@ import org.altbeacon.beacon.RangeNotifier;
 import org.altbeacon.beacon.Region;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-
-
-import android.os.StrictMode;
-import android.util.Log;
-
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 
 import java.util.Collection;
 
@@ -71,6 +61,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
 
         beaconManager = BeaconManager.getInstanceForApplication(this);
         beaconManager.bind(this);
+        beaconManager.setForegroundBetweenScanPeriod(3600000l); //scan beacon periodically
 
         // Find the view pager that will allow the user to swipe between fragments
         viewPager = (ViewPager) findViewById(R.id.viewpager);
@@ -128,9 +119,6 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
                         if(viewPager.getCurrentItem() == 0) //First fragment
                         {
                             request();
-//                            AttendanceActivityFragment frg = (AttendanceActivityFragment) pagerAdapter.getItem(0);
-//                            frg.request(context);
-                            Log.d(TAG, "didRangeBeaconsInRegion: qweouqwoieqwoewquo");
 
                         }
                     }
@@ -146,7 +134,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
 
     public void request() {
         Log.d(TAG, "request: ");
-        String url = "http://192.168.30.106:3000/api/currClass/1/test";
+        String url = "http://192.168.4.170:3000/api/currClass/1/test";
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
                 (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {

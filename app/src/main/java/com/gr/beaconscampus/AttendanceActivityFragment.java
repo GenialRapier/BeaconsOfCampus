@@ -81,7 +81,7 @@ public class AttendanceActivityFragment extends Fragment implements LocationList
 
         View rootView = inflater.inflate(R.layout.fragment_attendance, container, false);
 
-        Student student = new Student("default Student ID", "default Student Name", "Currently not attending any class");
+        Student student = new Student("default Student ID", "default Student Name", "");
 
         this.studentNameTextView = (TextView) rootView.findViewById(R.id.nameTextView);
 
@@ -111,8 +111,6 @@ public class AttendanceActivityFragment extends Fragment implements LocationList
 
         checkLocationPermission();
 
-        //dialog();
-
         return rootView;
     }
 
@@ -124,7 +122,6 @@ public class AttendanceActivityFragment extends Fragment implements LocationList
     @Override
     public void onStart() {
         super.onStart();
-        //dialog();
     }
 
     @Override
