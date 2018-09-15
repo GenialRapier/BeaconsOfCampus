@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
@@ -41,12 +42,18 @@ import org.json.JSONObject;
 
 public class AttendanceActivityFragment extends Fragment implements LocationListener{
 
-    private TextView studentIdTextView;
-    private TextView studentNameTextView;
+    public TextView studentIdTextView;
+    public TextView studentNameTextView;
     public TextView classNameTextView;
     public TextView startTimeTextView;
     public TextView endTimeTextView;
     private TextView statusTextView;
+
+    SharedPreferences sharedpreferences;
+
+    public static final String mypreference = "mypref";
+    public static final String Name = "nameKey";
+    public static final String Password = "passKey";
 
     private Context context;
 
@@ -83,6 +90,9 @@ public class AttendanceActivityFragment extends Fragment implements LocationList
 
         Student student = new Student("default Student ID", "default Student Name", "");
 
+        sharedpreferences = context.getSharedPreferences(mypreference,
+                Context.MODE_PRIVATE);
+
         this.studentNameTextView = (TextView) rootView.findViewById(R.id.nameTextView);
 
         this.studentIdTextView = (TextView) rootView.findViewById(R.id.idTextView);
@@ -111,12 +121,32 @@ public class AttendanceActivityFragment extends Fragment implements LocationList
 
         checkLocationPermission();
 
+        if (sharedpreferences.contains(Name)) {
+            studentIdTextView.setText(getResources().getString(R.string.student_id) + " " + sharedpreferences.getString(Name, ""));
+        }
+        else {
+            try {
+                Intent intent = new Intent(context, LoginActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_TASK_ON_HOME);
+                startActivityForResult(intent, 0);
+            }
+            catch (Exception e) {
+                Log.d(TAG, "onCreate: " + e);
+            }
+        }
+
         return rootView;
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        studentIdTextView.setText(getResources().getString(R.string.student_id) + " " + sharedpreferences.getString(Name, ""));
     }
 
     @Override

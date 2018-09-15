@@ -18,4 +18,9 @@
     <string name="end_time">End Time: </string>
 
     <string name="status">Status: </string>
+
+    <string name="error_invalid_email">This email address is invalid</string>
+    <string name="error_invalid_username">This username is invalid</string>
+    <string name="error_invalid_fields">The username or password is invalid</string>
+    <string name="error_invalid_password">This password is too short</string>
 </resources>

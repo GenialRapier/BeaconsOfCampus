@@ -7,5 +7,11 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
+    <style name="TextInputLabel">
+        <item name="android:textColor">@color/colorAccentPink</item>
+    </style>
+    <style name="TextInputField">
+        <item name="android:textColor">@color/colorAccentWhite</item>
+    </style>
 
 </resources>
