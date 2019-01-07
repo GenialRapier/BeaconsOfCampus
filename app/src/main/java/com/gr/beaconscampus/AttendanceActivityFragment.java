@@ -21,6 +21,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import android.Manifest;
@@ -47,7 +48,7 @@ public class AttendanceActivityFragment extends Fragment implements LocationList
     public TextView classNameTextView;
     public TextView startTimeTextView;
     public TextView endTimeTextView;
-    private TextView statusTextView;
+    public TextView statusTextView;
 
     SharedPreferences sharedpreferences;
 
@@ -60,6 +61,8 @@ public class AttendanceActivityFragment extends Fragment implements LocationList
     private String classString;
     private String startTime;
     private String endTime;
+
+    private Button scanButton;
 
     LocationManager locationManager;
     String provider;
@@ -92,6 +95,8 @@ public class AttendanceActivityFragment extends Fragment implements LocationList
 
         sharedpreferences = context.getSharedPreferences(mypreference,
                 Context.MODE_PRIVATE);
+
+        this.scanButton = (Button) rootView.findViewById(R.id.scanButton);
 
         this.studentNameTextView = (TextView) rootView.findViewById(R.id.nameTextView);
 

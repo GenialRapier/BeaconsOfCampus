@@ -10,7 +10,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
+            android:layout_weight="2"
             android:orientation="vertical">
 
             <TextView
@@ -54,7 +54,19 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:orientation="vertical">
+            <Button
+                android:id="@+id/scanButton"
+                android:background="@drawable/selector_login"
+                android:fontFamily="sans-serif-condensed"
+                android:textColor="@color/colorAccentWhite"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top"
+                android:layout_margin="16dp"
+                android:onClick="onScanClicked"
+                android:text="@string/scan"/>
             <TextView
                 android:id="@+id/statusTextView"
                 android:layout_width="match_parent"

@@ -7,6 +7,10 @@
 
     <string name="prompt_quit">Press back again to leave</string>
 
+    <string name="attend_fail">You don\'t have any lecture right now</string>
+
+    <string name="attend_success">You are now attending this class</string>
+
     <string name="name">Name: </string>
 
     <string name="student_id">Student ID: </string>
@@ -18,6 +22,10 @@
     <string name="end_time">End Time: </string>
 
     <string name="status">Status: </string>
+
+    <string name="scan">Scan</string>
+
+    <string name="info">Info</string>
 
     <string name="error_invalid_email">This email address is invalid</string>
     <string name="error_invalid_username">This username is invalid</string>

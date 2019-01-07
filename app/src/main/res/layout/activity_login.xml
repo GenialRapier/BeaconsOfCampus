@@ -40,7 +40,7 @@ tools:context="com.gr.beaconscampus.LoginActivity">
             android:layout_gravity="center_horizontal"
             android:scaleType="fitCenter"
             android:layout_marginBottom="16dp"
-            android:src="@drawable/ic_assignment_turned_in_black_24dp" />
+            android:src="@mipmap/ic_logo_foreground" />
 
         <TextView
             android:layout_marginBottom="24dp"

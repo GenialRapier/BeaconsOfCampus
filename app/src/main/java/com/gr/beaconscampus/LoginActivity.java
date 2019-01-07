@@ -20,10 +20,14 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by ahmad on 15/09/2018.
@@ -44,6 +48,8 @@ public class LoginActivity extends AppCompatActivity {
     private View mProgressView;
     private View mLoginFormView;
     private JSONObject data = null;
+
+    RequestQueue queue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +74,8 @@ public class LoginActivity extends AppCompatActivity {
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+
+        queue = Volley.newRequestQueue(this);
 
         mEmailSignInButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -121,15 +129,7 @@ public class LoginActivity extends AppCompatActivity {
 
         showProgress(true);
 
-        try {
-            String datas = "{'username': username,'password': password}";
-            data = new JSONObject(datas);
-        }catch (JSONException e){
-            e.printStackTrace();
-        }
-
-        final String url = "http://192.168.4.170:3000/api/currClass/1/test";
-        postData(url, data);
+        postData(username, password);
     }
 
     private boolean isUsernameValid(String username) {
@@ -145,40 +145,57 @@ public class LoginActivity extends AppCompatActivity {
         this.finish();
     }
 
-    public void postData(String url,JSONObject data){
-        RequestQueue requstQueue = Volley.newRequestQueue(this);
-
-        JsonObjectRequest jsonobj = new JsonObjectRequest(Request.Method.POST, url,data,
-                new Response.Listener<JSONObject>() {
+    public void postData(final String username, final String password){
+        String url = "http://192.168.43.212/beacon_backend/api/student/login.php";
+        StringRequest postRequest = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>()
+                {
                     @Override
-                    public void onResponse(JSONObject response) {
-                        if (response != null) {
-                            String n = mUsernameView.getText().toString();
-                            String p = mPasswordView.getText().toString();
-                            SharedPreferences.Editor editor = sharedpreferences.edit();
-                            editor.putString(Name, n);
-                            editor.putString(Password, p);
-                            editor.commit();
-                            LoginActivity.this.startMainActivity();
-                            showProgress(false);
+                    public void onResponse(String response) {
+                        try {
+                            JSONObject responseJSON = new JSONObject(response);
+                            String messageString = responseJSON.getString("message");
+                            if (messageString.equals("success")) {
+                                // response
+                                Log.d("Response", response);
+                                Log.d("LoginActivity", "onResponse: success");
+                                String n = mUsernameView.getText().toString();
+                                String p = mPasswordView.getText().toString();
+                                SharedPreferences.Editor editor = sharedpreferences.edit();
+                                editor.putString(Name, n);
+                                editor.putString(Password, p);
+                                editor.commit();
+                                LoginActivity.this.startMainActivity();
+                                showProgress(false);
+                            }
+                            else {
+                                showProgress(false);
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
                     }
                 },
-                new Response.ErrorListener() {
+                new Response.ErrorListener()
+                {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        String n = mUsernameView.getText().toString(); // Debug
-                        String p = mPasswordView.getText().toString(); // Debug
-                        SharedPreferences.Editor editor = sharedpreferences.edit(); // Debug
-                        editor.putString(Name, n); // Debug
-                        editor.putString(Password, p); // Debug
-                        editor.commit(); // Debug
-                        LoginActivity.this.startMainActivity(); // Debug purpose
-                        showProgress(false);
+                        // error
+                        Log.d("Error.Response", error.toString());
                     }
                 }
-        );
-        requstQueue.add(jsonobj);
+        ) {
+            @Override
+            protected Map<String, String> getParams()
+            {
+                Map<String, String>  params = new HashMap<String, String>();
+                params.put("id", username);
+                params.put("pass", password);
+
+                return params;
+            }
+        };
+        queue.add(postRequest);
 
     }
 
